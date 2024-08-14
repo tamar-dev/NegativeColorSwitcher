@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negative Color Switcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2d2d30;
+            color: #f1f1f1;
+            margin: 0;
+            padding: 20px;
+            width: 300px;
+        }
+
+        h3 {
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #724ebf;
+            background-color: #3a3a3d;
+            color: #f1f1f1;
+        }
+
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #724ebf;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h3>Mode Selection</h3>
+        <select id="mode">
+            <option value="blacklist">Blacklist Mode</option>
+            <option value="whitelist">Whitelist Mode</option>
+        </select>
+    </div>
+    <div class="switch-container">
+        <h3>Current Site:</h3>
+        <label class="switch">
+            <input type="checkbox" id="site-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div>
+        <h3>URL List</h3>
+        <div id="url-list"></div>
+    </div>
+    <div class="footer">
+        Developed by [Your Name]
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

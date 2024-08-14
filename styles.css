@@ -1,0 +1,26 @@
+/* .inv {
+    filter: invert(0.9) hue-rotate(180deg);
+}
+
+.inv img,
+.inv video,
+.inv iframe,
+.inv object,
+.inv [style*="background-image"] {
+    filter: invert(0.9) hue-rotate(180deg) contrast(100%) !important;
+} */
+
+/* פילטר ראשי שמחיל את הנגטיב על כל הדף */
+.inv {
+    filter: invert(0.9) hue-rotate(180deg);
+}
+
+/* ביטול אפקט עבור תמונות ווידאו עם כוונון נוסף */
+.inv img,
+.inv video,
+.inv iframe,
+.inv object,
+.inv *[style*="background-image"],
+.inv *:has([style*="background-image"]) {
+    filter: invert(1) hue-rotate(180deg) brightness(1.05) contrast(1.05) !important;
+}
