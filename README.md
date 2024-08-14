@@ -15,7 +15,7 @@ A Chrome extension that allows users to invert the colors of websites, applying 
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/negative-colors-extension.git
+    git clone https://github.com/tamar-dev/NegativeColorSwitcher.git
     ```
 2. **Load the extension**:
     1. Open Chrome and navigate to `chrome://extensions/`.
