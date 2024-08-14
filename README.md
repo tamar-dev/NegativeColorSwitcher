@@ -8,7 +8,7 @@ A Chrome extension that allows users to invert the colors of websites, applying 
 - **Customizable Lists**: 
   - **Blacklist Mode**: The extension applies to all websites except those on the blacklist.
   - **Whitelist Mode**: The extension applies only to websites on the whitelist.
-- **Dynamic Content Handling**: Automatically applies the negative effect to dynamic content like images and video backgrounds.
+- **Dynamic Content Handling**: Automatically applies the negative effect to dynamic content like page backgrounds, while excluding images to preserve their original appearance.
 - **User-Friendly Interface**: Modern and intuitive UI with easy-to-use switches for customization.
 
 ## Installation
@@ -71,5 +71,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For questions, suggestions, or feedback, please contact:
-- **Your Name** - [tamar.sharabi123@gmail.com](mailto:tamar.sharabi123@gmail.com)
+- **Tamar Sharabi** - [tamar.sharabi123@gmail.com](mailto:tamar.sharabi123@gmail.com)
 - GitHub: [tamar-dev](https://github.com/tamar-dev)
