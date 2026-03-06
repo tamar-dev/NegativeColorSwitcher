@@ -3,10 +3,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // הפעלת הפונקציה מידית על כל דף בהתאם לרשימות וההגדרות
     (function() {
-        chrome.storage.sync.get(['mode', 'blacklist', 'whitelist'], function (data) {
+        chrome.storage.sync.get(['mode', 'blacklist', 'whitelist', 'enabled'], function (data) {
             const mode = data.mode || 'blacklist';
             const list = mode === 'blacklist' ? data.blacklist || [] : data.whitelist || [];
             const currentHost = window.location.hostname;
+            const enabled = data.enabled !== false;
+
+            if (!enabled) return;
 
             const shouldApply = mode === 'blacklist' ? !list.includes(currentHost) : list.includes(currentHost);
 

@@ -21,9 +21,18 @@ function updateTabs() {
 
 // פונקציה לעדכון טאב בודד
 function updateTab(tabId) {
-    chrome.storage.sync.get(['mode', 'blacklist', 'whitelist'], function (data) {
+    chrome.storage.sync.get(['mode', 'blacklist', 'whitelist', 'enabled'], function (data) {
         const mode = data.mode || 'blacklist';
         const list = mode === 'blacklist' ? data.blacklist || [] : data.whitelist || [];
+        const enabled = data.enabled !== false;
+
+        if (!enabled) {
+            chrome.scripting.executeScript({
+                target: { tabId: tabId },
+                func: () => document.documentElement.classList.remove('inv')
+            });
+            return;
+        }
 
         chrome.tabs.get(tabId, function(tab) {
             const shouldApply = mode === 'blacklist' ? !list.includes(new URL(tab.url).hostname) : list.includes(new URL(tab.url).hostname);
