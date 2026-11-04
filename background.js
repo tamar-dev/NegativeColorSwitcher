@@ -1,6 +1,6 @@
 // הקשב לשינויים בהגדרות שנשמרות
 chrome.storage.onChanged.addListener((changes) => {
-    if (changes.mode || changes.blacklist || changes.whitelist) {
+    if (changes.mode || changes.blacklist || changes.whitelist || changes.enabled) {
         updateTabs();
     }
 });
@@ -12,42 +12,28 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     }
 });
 
-// פונקציה לעדכון כל הטאבים הפעילים בהתאם להגדרות
+// פונקציה לעדכון כל הטאבים הפתוחים בהתאם להגדרות
 function updateTabs() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        tabs.forEach(tab => updateTab(tab.id));
-    });
-}
-
-// פונקציה לעדכון טאב בודד
-function updateTab(tabId) {
-    chrome.storage.sync.get(['mode', 'blacklist', 'whitelist', 'enabled'], function (data) {
-        const mode = data.mode || 'blacklist';
-        const list = mode === 'blacklist' ? data.blacklist || [] : data.whitelist || [];
-        const enabled = data.enabled !== false;
-
-        if (!enabled) {
-            chrome.scripting.executeScript({
-                target: { tabId: tabId },
-                func: () => document.documentElement.classList.remove('inv')
-            });
-            return;
-        }
-
-        chrome.tabs.get(tabId, function(tab) {
-            const shouldApply = mode === 'blacklist' ? !list.includes(new URL(tab.url).hostname) : list.includes(new URL(tab.url).hostname);
-
-            if (shouldApply) {
-                chrome.scripting.executeScript({
-                    target: { tabId: tabId },
-                    func: () => document.documentElement.classList.add('inv')
-                });
-            } else {
-                chrome.scripting.executeScript({
-                    target: { tabId: tabId },
-                    func: () => document.documentElement.classList.remove('inv')
-                });
+    chrome.tabs.query({}, function (tabs) {
+        tabs.forEach(tab => {
+            if (tab.id !== undefined && /^(https?|file):/.test(tab.url || '')) {
+                updateTab(tab.id);
             }
         });
     });
+}
+
+// פונקציה לעדכון טאב בודד - ההחלטה אם להחיל נעשית ב-content.js
+async function updateTab(tabId) {
+    try {
+        await chrome.tabs.sendMessage(tabId, { type: 'nc:refresh' });
+    } catch (e) {
+        // טאב שנפתח לפני התקנה/טעינה מחדש של ההרחבה אין בו content script
+        try {
+            await chrome.scripting.insertCSS({ target: { tabId: tabId }, files: ['styles.css'] });
+            await chrome.scripting.executeScript({ target: { tabId: tabId }, files: ['content.js'] });
+        } catch (injectError) {
+            // דפים מוגבלים (chrome://, חנות האינטרנט וכו') - מתעלמים
+        }
+    }
 }
