@@ -1,10 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
     const modeSelect = document.getElementById('mode');
+    const enableDisableToggle = document.getElementById('enable-disable-toggle');
     const siteToggle = document.getElementById('site-toggle');
     const urlListDiv = document.getElementById('url-list');
     // Load saved mode and URL lists
-    chrome.storage.sync.get(['mode', 'blacklist', 'whitelist'], function (data) {
+    chrome.storage.sync.get(['mode', 'blacklist', 'whitelist', 'enabled'], function (data) {
         const mode = data.mode || 'blacklist';
+        const enabled = data.enabled !== false;
+        enableDisableToggle.checked = enabled;
+        modeSelect.disabled = !enabled;
+        siteToggle.disabled = !enabled;
         modeSelect.value = mode;
         updateUrlList(mode, data.blacklist, data.whitelist);
         updateSiteToggle(mode, data.blacklist, data.whitelist);
@@ -18,6 +23,23 @@ document.addEventListener('DOMContentLoaded', function () {
             updateUrlList(mode, data.blacklist, data.whitelist);
             updateSiteToggle(mode, data.blacklist, data.whitelist);
             applySiteSettings(mode);
+        });
+    });
+
+    // Handle enable/disable toggle change
+    enableDisableToggle.addEventListener('change', function () {
+        const enabled = enableDisableToggle.checked;
+        modeSelect.disabled = !enabled;
+        siteToggle.disabled = !enabled;
+        chrome.storage.sync.set({ enabled: enabled }, function () {
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                if (tabs.length > 0) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: enabled ? applyNegativeColors : removeNegativeColors
+                    });
+                }
+            });
         });
     });
 
@@ -90,7 +112,15 @@ function applySiteSettings(mode) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         if (tabs.length > 0) {
             const url = new URL(tabs[0].url).hostname;
-            chrome.storage.sync.get([mode], function (data) {
+            chrome.storage.sync.get([mode, 'enabled'], function (data) {
+                const enabled = data.enabled !== false;
+                if (!enabled) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: tabs[0].id },
+                        func: removeNegativeColors
+                    });
+                    return;
+                }
                 const list = data[mode] || [];
                 console.log('Current List:', list);
                 console.log('Mode:', mode);
